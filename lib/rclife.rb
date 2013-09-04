@@ -36,7 +36,7 @@ module RCLife
 
     def initialize(i, j, state = :dead)
       if not [:live, :dead].include?(state)
-        raise "Cell state must be :live or :dead. Got: #{state.to_s}"
+        raise "Cell state must be :live or :dead. Got: #{state}"
       else
         @i = i
         @j = j
