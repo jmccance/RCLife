@@ -75,7 +75,8 @@ module RCLife
     def step
       new_grid = @grid.map do |row|
         row.map do |cell|
-          Cell.new(cell.i, cell.j, Rules.apply(cell.state, neighbors(cell)))
+          new_state = Rules.apply(cell.state, neighbor_states(cell))
+          Cell.new(cell.i, cell.j, new_state)
         end
       end
 
@@ -112,7 +113,7 @@ module RCLife
 
       # Calculate the absolute coordinates of the neighbors of a given cell.
       # +cell+:: cell whose neighbors you want to calculate.
-      def neighbors(cell)
+      def neighbor_states(cell)
         REL_NEIGHBORS.map do |c| 
           self[c[0] + cell.i, c[1] + cell.j]
         end.select { not nil }
