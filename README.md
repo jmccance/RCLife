@@ -20,6 +20,12 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
+## Acknowledgements
+
+Curses code adapted from:
+
+    https://github.com/grosser/tic_tac_toe/
+
 ## Contributing
 
 1. Fork it
