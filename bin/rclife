@@ -42,6 +42,7 @@ def init_screen
   Curses.init_screen
   Curses.stdscr.keypad(true)
   Curses.timeout = 0
+  Curses.cbreak
   Curses.mousemask(Curses::BUTTON1_CLICKED)
 
   begin
@@ -98,6 +99,8 @@ init_screen do
     when ' ' then grid.step
       # Reset grid
     when ?c, ?C then grid = Grid.new(Curses.lines, Curses.cols)
+      # Randomized grid reset
+    when ?r, ?R then grid = Grid.new(Curses.lines, Curses.cols, true)
       # Toggle auto-run
     when ?p, ?P then is_running ^= true
       # Quit

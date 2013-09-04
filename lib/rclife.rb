@@ -50,10 +50,10 @@ module RCLife
 
     attr_reader :width, :height
 
-    def initialize(height, width)
+    def initialize(height, width, randomize = false)
       @width = width
       @height = height
-      @grid = init_grid()
+      @grid = init_grid(randomize)
     end
 
     def [](i, j)
@@ -110,10 +110,12 @@ module RCLife
         end.uniq - [[0,0]]
 
       # Initialize a new grid of dead cells.
-      def init_grid
+      def init_grid(randomize = false)
         Array.new(@height) do |i|
           Array.new(@width) do |j|
-            Cell.new(i, j)
+            states = [:dead, :live]
+            states = states.shuffle if randomize
+            Cell.new(i, j, states[0])
           end
         end
       end
