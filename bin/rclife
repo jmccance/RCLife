@@ -18,19 +18,19 @@ class Cursor
   end
 
   def move_left   
-    @col -= 1
+    @col -= 1 if @col > 0
   end
   
   def move_right
-    @col += 1
+    @col += 1 if @col + 1 < Curses.cols
   end
   
   def move_up 
-    @row -= 1
+    @row -= 1 if @row > 0
   end
 
   def move_down
-    @row += 1
+    @row += 1 if @row + 1 < Curses.lines
   end
 
 end
