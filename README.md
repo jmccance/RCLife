@@ -1,24 +1,27 @@
-# Rclife
+# RCLife
 
-TODO: Write a gem description
+A Ruby + Curses implementation of [Conway's Game of Life](en.wikipedia.org/wiki/Conway's_Game_of_Life).
 
 ## Installation
 
-Add this line to your application's Gemfile:
+To install, download the sources and run
 
-    gem 'rclife'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install rclife
+    bundle install
 
 ## Usage
 
-TODO: Write usage instructions here
+To run RCLife, run
+
+    rclife
+
+You can then control the simulation with your keyboard:
+
+* Spacebar: Step the simulation.
+* `P`: Toggle auto-run.
+* Arrow keys: Move the cursor
+* `X`: Toggle the currently highlighted cell between "live" and "dead".
+* `C`: Clear the grid, resetting the simulation.
+* `Q`: Quit the program.
 
 ## Acknowledgements
 
@@ -27,6 +30,8 @@ Curses code adapted from:
     https://github.com/grosser/tic_tac_toe/
 
 ## Contributing
+
+This was very much a project for my own amusement, if you wanted to suggest a change for some reason:
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
