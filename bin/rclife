@@ -46,6 +46,7 @@ def init_screen
   begin
     yield
   rescue Interrupt
+    # Prevent ^C from causing an ugly stack-trace
   ensure
     Curses.close_screen
   end
