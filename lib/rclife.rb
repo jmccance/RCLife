@@ -57,11 +57,7 @@ module RCLife
     end
 
     def [](i, j)
-      if in_bounds?(i, j)
-        @grid[i][j].state
-      else
-        nil
-      end
+      in_bounds?(i, j) ? @grid[i][j].state : nil
     end
 
     def []=(i, j, state)
@@ -130,7 +126,7 @@ module RCLife
 
       # Returns true iff (i, j) is on the grid.
       def in_bounds?(i, j)
-        ((0...@height).include? i and (0...@width).include? j)
+        (0 <= i and i < @height) and (0 <= j and j < @width)
       end
 
   end
