@@ -85,7 +85,7 @@ init_screen do
     when Curses::Key::UP    then cursor.move_up
     when Curses::Key::DOWN  then cursor.move_down
       # For mouse clicks, both move the cursor and toggle the cell.
-    when Curses::KEY_MOUSE then
+    when Curses::KEY_MOUSE
       m = Curses.getmouse
 
       if m
