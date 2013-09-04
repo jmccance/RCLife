@@ -5,28 +5,23 @@ require 'rclife/version'
 module RCLife
 
   module Rules
-    @rules =
-      lambda do
-        rules = {}
-
+    @rules = Hash[
         # Live cells die with fewer than two neighbors
-        [0, 1].each { |n| rules[[:live, n]] = :dead }
+        [0, 1].map { |n| [[:live, n], :dead] } +
 
         # Live cells with two or three neighbors live
-        [2, 3].each { |n| rules[[:live, n]] = :live }
+        [2, 3].map { |n| [[:live, n], :live] } +
 
         # Live cells with more than three neighbors die
-        (4..8).each { |n| rules[[:live, n]] = :dead }
+        (4..8).map { |n| [[:live, n], :dead] } +
 
         # Dead cells with three neighbors respawn
-        rules[[:dead, 3]] = :live
+        [[[:dead, 3], :live]] +
 
         # Dead cells without three neighbors ... stay dead
-        (0..2).each { |n| rules[[:dead, n]] = :dead }
-        (4..8).each { |n| rules[[:dead, n]] = :dead }
-
-        return rules
-      end.call
+        (0..2).map { |n| [[:dead, n], :dead] } +
+        (4..8).map { |n| [[:dead, n], :dead] }
+    ]
 
     def self.apply(state, neighbor_states)
       @rules[[state, neighbor_states.count(:live)]]
@@ -37,9 +32,11 @@ module RCLife
   class Cell
 
     attr_reader :state
+    attr_reader :i, :j
 
-    def initialize(i, j, state = :live)
-      @pos = { :i => i, :j => j }
+    def initialize(i, j, state = :dead)
+      @i = i
+      @j = j
       @state = state
     end
 
@@ -53,55 +50,73 @@ module RCLife
       @width = width
       @height = height
       @grid = init_grid()
-
-      @rel_neighbors = relative_neighbors()
     end
 
     def [](i, j)
-      if ((0...@height).include? i and (0...@width).include? j)
-        @grid[i][j]
+      if in_bounds?(i, j)
+        @grid[i][j].state
       else
-        raise IndexError, 
-          "(#{i}, #{j}) out of range for #{height} x #{width} grid."
+        nil
       end
     end
 
-    def neighbors(i, j)
-      @rel_neighbors.map { |c| @grid[c[0] + i][c[1] + j] }
+    def []=(i, j, state)
+      if in_bounds?(i, j)
+        @grid[i][j] = Cell.new(i, j, state)
+      else
+        nil
+      end
     end
 
     def step
-      new_grid = init_grid()
-
-      @height.times do |i|
-        @width.times do |j|
-          new_grid[i][j] = apply_rules(i, j)
+      new_grid = @grid.map do |row|
+        row.map do |cell|
+          Cell.new(cell.i, cell.j, Rules.apply(cell.state, neighbors(cell)))
         end
       end
 
       @grid = new_grid
     end
 
+    def pretty_print
+      chars = { :live => ?#, :dead => ?. }
+
+      @height.times do |i|
+        @width.times do |j|
+          print chars[@grid[i][j].state]
+        end
+        puts
+      end
+    end
+
     private
 
-      def apply_rules(i, j)
-        @rel_neighbors.map { |c| 
-          [c[0] + i, c[1] + j] 
-        }.reduce { |a, b| @grid[a] + b }
-      end
+      # The relative coordinates of any given cell's immediate neighbors.
+      REL_NEIGHBORS = 
+        [-1, 0, 1].repeated_combination(2).flat_map do |p| 
+          p.permutation.to_a
+        end.uniq - [[0,0]]
 
+      # Initialize a new grid of dead cells.
       def init_grid
         Array.new(@height) do |i|
           Array.new(@width) do |j|
-            Cell.new(self, i, j)
+            Cell.new(i, j)
           end
         end
       end
 
-      def relative_neighbors
-        [-1, 0, 1].repeated_combination(2).flat_map do |p| 
-          p.permutation.to_a
-        end.uniq - [[0,0]]
+      # Calculate the absolute coordinates of the neighbors of a given cell.
+      # +cell+:: cell whose neighbors you want to calculate.
+      def neighbors(cell)
+        REL_NEIGHBORS.map do |c| 
+          self[c[0] + cell.i, c[1] + cell.j]
+        end.select { not nil }
+      end
+
+      # Returns true iff (i, j) is on the grid.
+      def in_bounds?(i, j)
+        ((0...@height).include? i and (0...@width).include? j)
       end
 
   end

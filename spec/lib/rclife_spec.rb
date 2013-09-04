@@ -20,7 +20,7 @@ describe 'Grid' do
     lb.height.should eq height
   end
 
-  it 'has a Cell in every valid coordinate' do
+  it 'every cell is alive or dead' do
     # Given
     width = 40
     height = 20
@@ -31,12 +31,12 @@ describe 'Grid' do
     # Then
     height.times do |i|
       width.times do |j|
-        lb[i, j].class.should eq Cell
+        [:dead, :live].should include lb[i, j]
       end
     end
   end
 
-  it 'raises an IndexError if an invalid coordinate is accessed' do
+  it 'return nil for invalid coordinates' do
     # Given
     width = 40
     height = 20
@@ -45,10 +45,39 @@ describe 'Grid' do
     g = Grid.new(width, height)
 
     # Then
-    expect { g[    -1,     0] }.to raise_error IndexError
-    expect { g[height,     0] }.to raise_error IndexError
-    expect { g[     0,    -1] }.to raise_error IndexError
-    expect { g[     0, width] }.to raise_error IndexError
+    g[    -1,     0].should be_nil
+    g[height,     0].should be_nil
+    g[     0,    -1].should be_nil
+    g[     0, width].should be_nil
+  end
+
+  it 'should step an empty grid without error' do
+    # Given
+    g = Grid.new(3, 3)
+
+    # Then
+    g.step
+  end
+
+  it 'should correctly simulate a spinner' do
+    # Given
+    init_state = [[:dead, :live, :dead]] * 3
+    g = Grid.new(3, 3)
+    init_state.length.times do |i|
+      init_state[i].length.times do |j|
+        g[i, j] = init_state[i][j]
+      end
+    end
+
+    # When
+    g.step
+
+    # Then
+    g.height.times do |i|
+      g.width.times do |j|
+        g[i, j].should eq init_state[j][i]
+      end
+    end
   end
 end
 
