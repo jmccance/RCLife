@@ -35,9 +35,13 @@ module RCLife
     attr_reader :i, :j
 
     def initialize(i, j, state = :dead)
-      @i = i
-      @j = j
-      @state = state
+      if not [:live, :dead].include?(state)
+        raise "Cell state must be :live or :dead. Got: #{state.to_s}"
+      else
+        @i = i
+        @j = j
+        @state = state
+      end
     end
 
   end
