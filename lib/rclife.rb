@@ -50,7 +50,7 @@ module RCLife
 
     attr_reader :width, :height
 
-    def initialize(width, height)
+    def initialize(height, width)
       @width = width
       @height = height
       @grid = init_grid()
@@ -81,6 +81,13 @@ module RCLife
       end
 
       @grid = new_grid
+    end
+
+    def toggle(i, j)
+      case self[i, j]
+      when :dead then self[i, j] = :live
+      when :live then self[i, j] = :dead
+      end
     end
 
     def pretty_print

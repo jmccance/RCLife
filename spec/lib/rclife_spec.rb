@@ -13,7 +13,7 @@ describe 'Grid' do
     height = 20
 
     # When
-    lb = Grid.new(width, height)
+    lb = Grid.new(height, width)
 
     # Then
     lb.width.should eq width
@@ -26,7 +26,7 @@ describe 'Grid' do
     height = 20
 
     # When
-    lb = Grid.new(width, height)
+    lb = Grid.new(height, width)
 
     # Then
     height.times do |i|
@@ -42,7 +42,7 @@ describe 'Grid' do
     height = 20
 
     # When
-    g = Grid.new(width, height)
+    g = Grid.new(height, width)
 
     # Then
     g[    -1,     0].should be_nil

@@ -1,99 +1,96 @@
 #!/usr/bin/env ruby
 require 'curses'
+require 'rclife'
+
+# View Model ##########################
+
+class Cursor
+
+  attr_accessor :row, :col
+
+  def initialize(row = 0, col = 0)
+    @row = row
+    @col = col
+  end
+
+  def draw
+    Curses.setpos(@row, @col)
+  end
+
+  def move_left   
+    @col -= 1
+  end
+  
+  def move_right
+    @col += 1
+  end
+  
+  def move_up 
+    @row -= 1
+  end
+
+  def move_down
+    @row += 1
+  end
+
+end
+
+# Main ################################
 
 def init_screen
   Curses.noecho
   Curses.init_screen
   Curses.stdscr.keypad(true)
   Curses.timeout = 0
-  Curses.curs_set(3)
 
   begin
     yield
+  rescue Interrupt
   ensure
     Curses.close_screen
   end
 end
 
-class Cursor
-  
-  def initialize(y, x)
-    @x = x
-    @y = y
-  end
+init_screen do
+  include RCLife
 
-  def draw
-    Curses.setpos(@y, @x)
-    Curses.addch('@')
-    Curses.setpos(0, 0)
-  end
+  # Set-up view model
+  cursor = Cursor.new
+  state_map = { :live => ?#, :dead => ' ', nil => ?! }
+  is_running = false
 
-  def move_left
-    @x -= 1 unless @x == 0
-  end
+  # Initialize model
+  grid = Grid.new(Curses.lines, Curses.cols)
 
-  def move_right
-    @x += 1 unless @x + 1 >= Curses.cols
-  end
+  loop do
+    grid.step if is_running
 
-  def move_up
-    @y -= 1 unless @y == 0
-  end
-
-  def move_down
-    @y += 1 unless @y + 1 >= Curses.lines
-  end
-
-end
-
-class ScreenFiller
-
-  attr_accessor :fillch
-
-  def initialize(fillch)
-    @fillch = fillch
-  end
-
-  def fill
-    if @fillch == ?/
-      @fillch == ?\
-    elsif @fillch == ?\ 
-      @fillch == ?/
-    end
-
-    Curses.lines.times do |y|
-      Curses.cols.times do |x|
-        Curses.setpos(y, x)
-        Curses.addch(self.fillch)
+    grid.height.times do |i|
+      grid.width.times do |j|
+        Curses.setpos(i, j)
+        Curses.addch(state_map[grid[i, j]])
       end
     end
-  end
-
-end
-
-cursor = Cursor.new(0, 0)
-filler = ScreenFiller.new(?/)
-
-def fill_screen
-  
-end
-
-init_screen do
-  loop do
-    Curses.clear
-    filler.fill
     cursor.draw
     Curses.refresh
-    sleep(1.0)
 
     ch = Curses.getch
     case ch
-    # when Curses::Key::LEFT then cursor.move_left
-    # when Curses::Key::RIGHT then cursor.move_right
-    # when Curses::Key::UP then cursor.move_up
-    # when Curses::Key::DOWN then cursor.move_down
+      # Cursor movement
+    when Curses::Key::LEFT  then cursor.move_left
+    when Curses::Key::RIGHT then cursor.move_right
+    when Curses::Key::UP    then cursor.move_up
+    when Curses::Key::DOWN  then cursor.move_down
+      # Toggle cell
+    when ?x, ?X then grid.toggle(cursor.row, cursor.col)
+      # Step simulation
+    when ' ' then grid.step
+      # Reset grid
+    when ?c, ?C then grid = Grid.new(Curses.lines, Curses.cols)
+      # Toggle auto-run
+    when ?p, ?P then is_running ^= true
+      # Quit
     when ?q then break
-    # when ?/ then filler.fillch = ?/
     end
   end
 end
