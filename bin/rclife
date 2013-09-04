@@ -42,6 +42,7 @@ def init_screen
   Curses.init_screen
   Curses.stdscr.keypad(true)
   Curses.timeout = 0
+  Curses.mousemask(Curses::BUTTON1_CLICKED)
 
   begin
     yield
@@ -82,6 +83,15 @@ init_screen do
     when Curses::Key::RIGHT then cursor.move_right
     when Curses::Key::UP    then cursor.move_up
     when Curses::Key::DOWN  then cursor.move_down
+      # For mouse clicks, both move the cursor and toggle the cell.
+    when Curses::KEY_MOUSE then
+      m = Curses.getmouse
+
+      if m
+        cursor.col = m.x
+        cursor.row = m.y
+        grid.toggle(cursor.row, cursor.col)
+      end
       # Toggle cell
     when ?x, ?X then grid.toggle(cursor.row, cursor.col)
       # Step simulation
