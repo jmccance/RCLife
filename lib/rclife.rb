@@ -32,30 +32,6 @@ module RCLife
       @rules[[state, neighbor_states.count(:live)]]
     end
 
-    private
-
-      def self.init_rules
-        rules = {}
-
-        # Live cells die with fewer than two neighbors
-        [0, 1].each { |n| rules[[:live, n]] = :dead }
-
-        # Live cells with two or three neighbors live
-        [2, 3].each { |n| rules[[:live, n]] = :live }
-
-        # Live cells with more than three neighbors die
-        (4..8).each { |n| rules[[:live, n]] = :dead }
-
-        # Dead cells with three neighbors respawn
-        rules[[:dead, 3]] = :live
-
-        # Dead cells without three neighbors ... stay dead
-        (0..2).each { |n| rules[[:live, n]] = :dead }
-        (4..8).each { |n| rules[[:live, n]] = :dead }
-
-        return rules
-      end
-
   end
 
   class Cell
