@@ -18,9 +18,10 @@ You can then control the simulation with your keyboard:
 
 * Spacebar: Step the simulation.
 * `P`: Toggle auto-run.
-* Arrow keys: Move the cursor
+* Arrow keys and mouse: Move the cursor
 * `X`: Toggle the currently highlighted cell between "live" and "dead".
 * `C`: Clear the grid, resetting the simulation.
+* `R`: Randomize the grid.
 * `Q`: Quit the program.
 
 ## Acknowledgements
